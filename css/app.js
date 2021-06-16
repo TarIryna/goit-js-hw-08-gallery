@@ -69,20 +69,31 @@ const galleryList = document.querySelector('.js-gallery');
 const galleryMarkup = createGalleryItems(galleryItems);
 const lightbox = document.querySelector('.js-lightbox');
 const lightboxImage = document.querySelector('.lightbox__image');
+const closeButton = document.querySelector('[data-action="close-lightbox"]');
+const overlay = document.querySelector('.lightbox__overlay');
+
 
 galleryList.insertAdjacentHTML('beforeend', galleryMarkup);
 galleryList.addEventListener('click', onImageListClick);
+overlay.addEventListener('click', closeLightbox);
+closeButton.addEventListener('click', closeLightbox);
+window.addEventListener('keydown', onEscape);
 
 function createGalleryItems(galleryItems) {
   return galleryItems.map(({preview, original, description})=> {
     return `
-        <li class="gallery__item">
+       <li class="gallery__item">
+     <a
+      class="gallery__link"
+      href="${original}"
+     >
        <img
           class="gallery__image"
           src="${preview}"
           data-source="${original}"
           alt="${description}"
          />
+      </a>
 </li>
     `;
   })
@@ -98,21 +109,38 @@ function onImageListClick(e) {
   const currentAlt = e.target.alt;
   lightboxImage.src = currentImage;
   lightboxImage.alt = currentAlt;
-  lightbox.classList.add('lightbox.is-open');
-  console.log(lightbox);
+  lightbox.classList.add('is-open');
 }
 
+function closeLightbox(e) {
+  if (!lightbox.classList.contains('is-open')) {
+    return;
+   }
+  if (!overlay){
+    return;
+  }
+  lightbox.classList.remove('is-open');
+  lightboxImage.src = '';
+  lightboxImage.alt = '';
 
-//  <li class="gallery__item">
-//      <a
-//       class="gallery__link"
-//       href="${original}"
-//      >
-//        <img
-//           class="gallery__image"
-//           src="${preview}"
-//           data-source="${original}"
-//           alt="${description}"
-//          />
-//       </a>
-// </li>
+}
+function onEscape(e) {
+  if (e.code === "Escape") {
+    closeLightbox();
+  }
+  // if (e.code === "ArrowRight") {
+  //   const name = lightboxImage.alt;
+  //   const currentImage = galleryList.querySelector('[alt = "`lightboxImage.alt `"]');
+  //   // const currentImage = document.querySelector('[data-source = src]');
+  //   // const nextImage = currentImage.closest('li').nextElementSibling;
+  //   // lightboxImage.src = nextImage.querySelector('img').dataset.source;
+  //   // lightboxImage.alt = nextImage.querySelector('img').alt;
+  //   console.log(currentImage);
+  // }
+  //  if (e.code === "ArrowLeft") {
+  //   const previousImage = e.target.closest('li').previousElementSibling;
+  //   lightboxImage.src = previousImage.querySelector('img').dataset.source;
+  //   lightboxImage.alt = previousImage.querySelector('img').alt;
+  // }
+
+}
